@@ -2,6 +2,10 @@ import { Divider } from "@mui/material";
 import logo from "../Components/Assets/logo.png";
 import { FacebookOutlined, Google, VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FacebookAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth, db } from "../Firebase/FirebaseConfig";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
@@ -9,11 +13,40 @@ export default function Login() {
         setShowPassword(!showPassword);
     };
 
+    const navigate = useNavigate();
+    const fbProvider = new FacebookAuthProvider();
+
+    const handleFacebookLogin = async () => {
+        try {
+            const { user } = await signInWithPopup(auth, fbProvider);
+            console.log({ user }); // Thông tin người dùng    
+
+            //Ghi thông tin người dùng vào Firestore
+            const userRef = doc(db, 'users', user.uid); // Lấy tham chiếu đến tài liệu
+            await setDoc(userRef, {
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                providerId: user.providerData[0]?.providerId,
+                uid: user.uid,
+                createdAt: new Date(),
+            }, { merge: true }); // Sử dụng merge để không ghi đè dữ liệu cũ
+
+            console.log("Thông tin người dùng đã được lưu vào Firestore");
+            navigate('/'); // Chuyển hướng sau khi đăng nhập thành công
+        } catch (error){
+            console.error("Error during Facebook Login: ", error);
+            
+        }
+
+    }
+
+
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex items-center justify-center min-h-screen bg-gray-100 ">
             <div className="bg-white shadow-md rounded-md p-8 w-96">
                 <div className="flex justify-center mb-4">
-                    <img src={logo} alt="logo" className="h-16" /> {/* Thay đổi kích thước logo nếu cần */}
+                    <img src={logo} alt="logo" className="h-16" /> 
                 </div>
 
                 <h1 className="text-2xl font-semibold text-center mb-4">Login Form</h1>
@@ -76,6 +109,7 @@ export default function Login() {
 
                     <div className="flex justify-between mb-4">
                         <button
+                            onClick={handleFacebookLogin}
                             className="flex justify-center items-center rounded-md w-[48%] border px-4 py-2 hover:bg-gray-100"
                         >
                             <FacebookOutlined className="mr-2"/>
@@ -93,8 +127,8 @@ export default function Login() {
 
                     <div className="flex justify-center items-center">
                         <p className="text-gray-500 text-sm">
-                            Don&apos;t have an account? 
-                            <a href="#" className="text-blue-500 hover:text-blue-700 text-sm"> Sign up</a>
+                            Don&apos;t have an account?     
+                            <a href="#" className="text-blue-500 hover:text-blue-700 text-sm"><Link to="/signup">Sign up</Link></a>
                         </p>
                     </div>
                 </form>

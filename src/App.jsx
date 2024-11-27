@@ -5,12 +5,15 @@ import ShopCategory from "./Pages/ShopCategory";
 import Product from "./Pages/Product";
 import Login from "./Pages/Login";
 import Navbar from './Components/Navbar';
+import SignUp from './Pages/SignUp';
+import AuthProvider from './Context/AuthProvider';
 
 
 function App() {
   return (
     <div className="w-full h-screen bg-[white]">
       <Router>
+        <AuthProvider>
         <Navbar/>
         <Routes>
           <Route path="/" element={<Shop/>}/>
@@ -21,8 +24,9 @@ function App() {
             <Route path=":productId" element={<Product/>}/>
           </Route>
           <Route path="/login" element={<Login/>}/>
-          
+          <Route path="/signup" element={<SignUp/>}/>
         </Routes>
+        </AuthProvider>
       </Router>
       
     </div>
