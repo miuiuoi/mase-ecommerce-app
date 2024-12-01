@@ -3,7 +3,7 @@ import { Item } from "./Item"
 
 export default function NewCollection() {
   return (
-    <div className="flex items-center justify-center gap-10 flex-col h-[90vh]">
+    <div className="flex items-center justify-center gap-10 flex-col h-[90vh] mb-6">
         <h1 className="text-[50px] font-medium">NEW COLLECTIONS</h1>
         <hr className="w-[200px] h-[6px] rounded-md bg-black"/>
         <div className="flex mt-[50px] gap-5">

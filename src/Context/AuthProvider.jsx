@@ -24,7 +24,9 @@ export default function AuthProvider({children}) {
             else{
                 setUser({});
                 setIsLoading(false);
-                navigate('/login')
+                if (window.location.pathname !== '/signup') {
+                    navigate('/login'); 
+                }
             }
         })
 
